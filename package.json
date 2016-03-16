@@ -1,0 +1,34 @@
+{
+  "name": "mean-thinkster-tutorial",
+  "version": "0.0.0",
+  "description": "Thinkster tutorial",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElPepe101/mean-thinkster-tutorial.git"
+  },
+  "keywords": [
+    "tutorial",
+    "thinkster",
+    "mean",
+    "mongodb",
+    "angularjs",
+    "express",
+    "nodejs"
+  ],
+  "author": "thinkster, elpepe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ElPepe101/mean-thinkster-tutorial/issues"
+  },
+  "homepage": "https://github.com/ElPepe101/mean-thinkster-tutorial#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  },
+  "devDependencies": {
+    "express-generator": "^4.13.1"
+  }
+}

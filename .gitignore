@@ -1,0 +1,21 @@
+# Node
+node_modules/
+
+# Bower
+bower_components/
+
+# Git
+.git
+
+# Mac
+.DS_Store
+
+# Composer
+composer.phar
+vendor/
+composer.lock
+
+# Other
+.tmp/
+dist/
+build/
