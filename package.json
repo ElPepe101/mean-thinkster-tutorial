@@ -25,9 +25,7 @@
     "url": "https://github.com/ElPepe101/mean-thinkster-tutorial/issues"
   },
   "homepage": "https://github.com/ElPepe101/mean-thinkster-tutorial#readme",
-  "dependencies": {
-    "express": "^4.13.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "express-generator": "^4.13.1"
   }
