@@ -24,7 +24,16 @@ var config = function ($stateProvider, $urlRouterProvider) {
       url: '/posts/{id}',
       templateUrl: '/posts.html',
       controller: 'PostsCtrl',
-      controllerAs: 'posts'
+      controllerAs: 'posts',
+      resolve: {
+        post: [
+          '$stateParams',
+          'posts',
+          function ($stateParams, posts) {
+            return posts.getPost($stateParams.id)
+          }
+        ]
+      }
     })
 
   $urlRouterProvider.otherwise('home')
@@ -60,6 +69,17 @@ var posts = function ($http) {
     return $http.put('/posts/' + post._id + '/upvote').success(putPostUpvote)
   }
 
+  posts.getPost = function (id) {
+    var getPost = function (res) {
+      return res.data
+    }
+    return $http.get('/posts/' + id).then(getPost)
+  }
+
+  posts.addPostComment = function (id, comment) {
+    return $http.post('/posts/' + id + '/comments', comment)
+  }
+
   return posts
 }
 app.factory('posts', ['$http', posts])
@@ -92,19 +112,25 @@ app.controller('HomeCtrl', ['posts', HomeCtrl])
 
 // ··············································
 // ············ POSTS CONTROLLER ················
-var PostsCtrl = function ($stateParams, posts) {
+var PostsCtrl = function (posts, post) {
   var self = this
-
-  self.post = posts.posts[$stateParams.id]
+  console.log(post)
+  self.post = post
 
   self.addComment = function () {
     if (self.body === '') return
-    self.post.comments.push({
-      body: self.body,
-      author: 'user',
-      upvotes: 0
-    })
+    var success = function (comment) {
+      self.post.comments.push(comment)
+    }
+
+    posts.addComment(
+      {
+        body: self.body,
+        author: 'user',
+        upvotes: 0
+      }
+    ).success(success)
     self.body = ''
   }
 }
-app.controller('PostsCtrl', ['$stateParams', 'posts', PostsCtrl])
+app.controller('PostsCtrl', ['posts', 'post', PostsCtrl])
