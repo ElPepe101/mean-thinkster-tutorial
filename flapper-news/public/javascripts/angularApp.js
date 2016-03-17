@@ -152,6 +152,15 @@ var auth = function ($http, $window) {
     }
   }
 
+  auth.currentUser = function () {
+    if (auth.isLoggedIn()) {
+      var token = auth.getToken()
+      var payload = JSON.parse($window.atob(token.splt('.')[1]))
+
+      return payload.username
+    }
+  }
+
   auth.register = function (user) {
     var success = function (data) {
       auth.saveToken(data.token)
@@ -267,8 +276,33 @@ app.controller('AuthCtrl', ['$state', 'auth', AuthCtrl])
 // ·············· NAV CONTROLLER ················
 var NavCtrl = function (auth) {
   var self = this
-  self.isLoggedIn = auth.isLoggedIn
-  self.currenUser = auth.currentUser
-  self.logOut = auth.logOut
+  self.isLoggedIn = auth.isLoggedIn()
+  self.currenUser = auth.currentUser()
+  self.links = [
+    {
+      show: self.isLoggedIn,
+      text: self.currentUser,
+      href: '',
+      click: null
+    },
+    {
+      show: self.isLoggedIn,
+      text: 'Log Out',
+      href: '',
+      click: auth.logOut
+    },
+    {
+      show: !self.isLoggedIn,
+      text: 'Log In',
+      href: '/#/login',
+      click: null
+    },
+    {
+      show: !self.isLoggedIn,
+      text: 'Register',
+      href: '/#/register',
+      click: null
+    }
+  ]
 }
 app.controller('NavCtrl', ['auth', NavCtrl])
