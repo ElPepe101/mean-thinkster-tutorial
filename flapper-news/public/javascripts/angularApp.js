@@ -46,6 +46,20 @@ var posts = function ($http) {
     return $http.get('/posts').success(getPosts)
   }
 
+  posts.create = function (post) {
+    var postPost = function (data) {
+      posts.posts.push(data)
+    }
+    return $http.post('/posts', post).success(postPost)
+  }
+
+  posts.upvote = function (post) {
+    var putPostUpvote = function (data) {
+      post.upvotes += 1
+    }
+    return $http.put('/posts/' + post._id + '/upvote').success(putPostUpvote)
+  }
+
   return posts
 }
 app.factory('posts', ['$http', posts])
@@ -60,15 +74,10 @@ var HomeCtrl = function (posts) {
   self.addPost = function () {
     if (!self.title || self.title === '') return
 
-    self.posts.push(
+    posts.create(
       {
         title: self.title,
-        link: self.link,
-        upvotes: 0,
-        comments: [
-          {author: 'Joe', body: 'Cool post!', upvotes: 0},
-          {author: 'Bob', body: 'Great idea but everything is wrong!', upvotes: 0}
-        ]
+        link: self.link
       }
     )
     self.title = ''
@@ -76,7 +85,7 @@ var HomeCtrl = function (posts) {
   }
 
   self.incrementUpvotes = function (post) {
-    post.upvotes += 1
+    posts.upvote(post)
   }
 }
 app.controller('HomeCtrl', ['posts', HomeCtrl])
