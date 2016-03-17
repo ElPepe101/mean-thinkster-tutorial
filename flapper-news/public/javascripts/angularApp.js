@@ -41,7 +41,7 @@ var config = function ($stateProvider, $urlRouterProvider) {
 app.config(['$stateProvider', '$urlRouterProvider', config])
 
 // ······································
-// ············· SERVICE ················
+// ··········· POST SERVICE ·············
 var posts = function ($http) {
   var posts = {
     posts: []
@@ -93,6 +93,56 @@ var posts = function ($http) {
   return posts
 }
 app.factory('posts', ['$http', posts])
+
+// ······································
+// ··········· AUTH SERVICE ·············
+var auth = function ($http, $window) {
+  var auth = {}
+
+  auth.saveToken = function (token) {
+    $window.localStorage['flapper-news-token'] = token
+  }
+
+  auth.getToken = function () {
+    return $window.localStorage['flapper-new-token']
+  }
+
+  auth.isLoggedIn = function () {
+    var token = auth.getToken()
+    // If a token exists, we'll need to check the payload to see if the token has expired,
+    // otherwise we can assume the user is logged out.
+    if (token) {
+      // The payload is the middle part of the token between the two '.'s.
+      // It's a JSON object that has been base64'd.
+      var payload = JSON.parse($window.atob(token.split('.')[1]))
+
+      return payload.exp > Date.now() / 1000
+    } else {
+      return false
+    }
+  }
+
+  auth.register = function (user) {
+    var success = function (data) {
+      auth.saveToken(data.token)
+    }
+
+    return $http.post('/register', user).success(success)
+  }
+
+  auth.login = function (user) {
+    var success = function (data) {
+      auth.saveToken(data.token)
+    }
+
+    return $http.post('/login', user).success(success)
+  }
+
+  return auth
+}
+// We'll need to inject $http for interfacing with our server,
+// and $window for interfacing with localStorage.
+app.factory('auth', ['$http', '$window', auth])
 
 // ·············································
 // ············ HOME CONTROLLER ················
