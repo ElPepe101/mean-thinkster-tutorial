@@ -10,7 +10,15 @@ var config = function ($stateProvider, $urlRouterProvider) {
       url: '/home',
       templateUrl: '/home.html',
       controller: 'HomeCtrl',
-      controllerAs: 'home'
+      controllerAs: 'home',
+      resolve: {
+        postPromise: [
+          'posts',
+          function (posts) {
+            return posts.getAll()
+          }
+        ]
+      }
     })
     .state('posts', {
       url: '/posts/{id}',
@@ -25,14 +33,22 @@ app.config(['$stateProvider', '$urlRouterProvider', config])
 
 // ······································
 // ············· SERVICE ················
-var posts = function () {
+var posts = function ($http) {
   var posts = {
     posts: []
   }
 
+  posts.getAll = function () {
+    var getPosts = function (data) {
+      angular.copy(data, posts.posts)
+    }
+
+    return $http.get('/posts').success(getPosts)
+  }
+
   return posts
 }
-app.factory('posts', [posts])
+app.factory('posts', ['$http', posts])
 
 // ·············································
 // ············ HOME CONTROLLER ················
