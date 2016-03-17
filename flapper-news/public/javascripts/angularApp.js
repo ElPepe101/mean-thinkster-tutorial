@@ -48,36 +48,46 @@ var posts = function ($http) {
   }
 
   posts.getAll = function () {
-    var getPosts = function (data) {
+    var success = function (data) {
       angular.copy(data, posts.posts)
     }
 
-    return $http.get('/posts').success(getPosts)
+    return $http.get('/posts').success(success)
   }
 
   posts.create = function (post) {
-    var postPost = function (data) {
+    var success = function (data) {
       posts.posts.push(data)
     }
-    return $http.post('/posts', post).success(postPost)
+
+    return $http.post('/posts', post).success(success)
   }
 
   posts.upvote = function (post) {
-    var putPostUpvote = function (data) {
+    var success = function (data) {
       post.upvotes += 1
     }
-    return $http.put('/posts/' + post._id + '/upvote').success(putPostUpvote)
+
+    return $http.put('/posts/' + post._id + '/upvote').success(success)
   }
 
   posts.getPost = function (id) {
     var getPost = function (res) {
       return res.data
     }
+
     return $http.get('/posts/' + id).then(getPost)
   }
 
   posts.addPostComment = function (id, comment) {
     return $http.post('/posts/' + id + '/comments', comment)
+  }
+
+  posts.upvoteComment = function (post, comment) {
+    var success = function (data) {
+      comment.upvotes += 1
+    }
+    return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/upvote').success(success)
   }
 
   return posts
@@ -123,14 +133,17 @@ var PostsCtrl = function (posts, post) {
       self.post.comments.push(comment)
     }
 
-    posts.addComment(
+    posts.addPostComment(post._id,
       {
         body: self.body,
-        author: 'user',
-        upvotes: 0
+        author: 'user'
       }
     ).success(success)
     self.body = ''
+  }
+
+  self.incrementUpvotes = function (comment) {
+    posts.upvoteComment(post, comment)
   }
 }
 app.controller('PostsCtrl', ['posts', 'post', PostsCtrl])
