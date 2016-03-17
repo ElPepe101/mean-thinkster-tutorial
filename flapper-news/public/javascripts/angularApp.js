@@ -35,6 +35,36 @@ var config = function ($stateProvider, $urlRouterProvider) {
         ]
       }
     })
+    .state('login', {
+      url: '/login',
+      templateUrl: '/login.html',
+      controller: 'AuthCtrl',
+      controllerAs: 'auth',
+      onEnter: [
+        '$state',
+        'auth',
+        function ($state, auth) {
+          if (auth.isLoggedIn()) {
+            $state.go('home')
+          }
+        }
+      ]
+    })
+    .state('register', {
+      url: '/register',
+      templateUrl: '/register.html',
+      controller: 'AuthCtrl',
+      controllerAs: 'auth',
+      onEnter: [
+        '$state',
+        'auth',
+        function ($state, auth) {
+          if (auth.isLoggedIn()) {
+            $state.go('home')
+          }
+        }
+      ]
+    })
 
   $urlRouterProvider.otherwise('home')
 }
@@ -104,7 +134,7 @@ var auth = function ($http, $window) {
   }
 
   auth.getToken = function () {
-    return $window.localStorage['flapper-new-token']
+    return $window.localStorage['flapper-news-token']
   }
 
   auth.isLoggedIn = function () {
@@ -130,12 +160,16 @@ var auth = function ($http, $window) {
     return $http.post('/register', user).success(success)
   }
 
-  auth.login = function (user) {
+  auth.logIn = function (user) {
     var success = function (data) {
       auth.saveToken(data.token)
     }
 
     return $http.post('/login', user).success(success)
+  }
+
+  auth.logOut = function () {
+    $window.localStorage.removeItem('flapper-news-token')
   }
 
   return auth
@@ -197,3 +231,44 @@ var PostsCtrl = function (posts, post) {
   }
 }
 app.controller('PostsCtrl', ['posts', 'post', PostsCtrl])
+
+// ··············································
+// ············· AUTH CONTROLLER ················
+var AuthCtrl = function ($state, auth) {
+  var self = this
+
+  self.register = function () {
+    var error = function (error) {
+      self.error = error
+    }
+
+    var then = function () {
+      $state.go('home')
+    }
+
+    auth.register(self.user).error(error).then(then)
+  }
+
+  self.logIn = function () {
+    var error = function (error) {
+      self.error = error
+    }
+
+    var then = function () {
+      $state.go('home')
+    }
+
+    auth.logIn(self.user).error(error).then(then)
+  }
+}
+app.controller('AuthCtrl', ['$state', 'auth', AuthCtrl])
+
+// ··············································
+// ·············· NAV CONTROLLER ················
+var NavCtrl = function (auth) {
+  var self = this
+  self.isLoggedIn = auth.isLoggedIn
+  self.currenUser = auth.currentUser
+  self.logOut = auth.logOut
+}
+app.controller('NavCtrl', ['auth', NavCtrl])
