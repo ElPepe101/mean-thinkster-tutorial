@@ -58,10 +58,15 @@
           <span>
             <a href="#/posts/{{post._id}}">Comments</a>
           </span>
+          <span data-ng-show="post.author">
+            posted by <a>{{post.author}}</a> |
+          </span>
         </span>
       </div>
 
-      <form data-ng-submit="home.addPost()" class="post-form">
+      <form class="post-form"
+        data-ng-submit="home.addPost()"
+        data-ng-show="home.show">
         <h3>Add a new post</h3>
         <div class="form-group">
           <input type="text"
@@ -78,6 +83,10 @@
 
         <button class="btn btn-primary" type="submit">Post</button>
       </form>
+
+      <div ng-hide="home.show">
+        <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can add a post.</h3>
+      </div>
     </script><!-- ················ END HOME TEMPLATE ················ -->
 
 
@@ -102,8 +111,9 @@
         </span>
       </div>
 
-      <form data-ng-submit="posts.addComment()"
-        class="post-form">
+      <form class="post-form"
+        data-ng-submit="posts.addComment()"
+        data-ng-show="posts.show">
         <h3>Add a new comment</h3>
 
         <div class="form-group">

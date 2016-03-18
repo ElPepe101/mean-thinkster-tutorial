@@ -72,7 +72,7 @@ app.config(['$stateProvider', '$urlRouterProvider', config])
 
 // ······································
 // ··········· POST SERVICE ·············
-var posts = function ($http) {
+var posts = function ($http, auth) {
   var posts = {
     posts: []
   }
@@ -90,7 +90,9 @@ var posts = function ($http) {
       posts.posts.push(data)
     }
 
-    return $http.post('/posts', post).success(success)
+    return $http.post('/posts', post, {
+      headers: {Authorization: 'Bearer ' + auth.getToken()}
+    }).success(success)
   }
 
   posts.upvote = function (post) {
@@ -98,7 +100,9 @@ var posts = function ($http) {
       post.upvotes += 1
     }
 
-    return $http.put('/posts/' + post._id + '/upvote').success(success)
+    return $http.put('/posts/' + post._id + '/upvote', null, {
+      headers: {Authorization: 'Bearer ' + auth.getToken()}
+    }).success(success)
   }
 
   posts.getPost = function (id) {
@@ -110,19 +114,23 @@ var posts = function ($http) {
   }
 
   posts.addPostComment = function (id, comment) {
-    return $http.post('/posts/' + id + '/comments', comment)
+    return $http.post('/posts/' + id + '/comments', comment, {
+      headers: {Authorization: 'Bearer ' + auth.getToken()}
+    })
   }
 
   posts.upvoteComment = function (post, comment) {
     var success = function (data) {
       comment.upvotes += 1
     }
-    return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/upvote').success(success)
+    return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/upvote', null, {
+      headers: {Authorization: 'Bearer ' + auth.getToken()}
+    }).success(success)
   }
 
   return posts
 }
-app.factory('posts', ['$http', posts])
+app.factory('posts', ['$http', 'auth', posts])
 
 // ······································
 // ··········· AUTH SERVICE ·············
@@ -189,10 +197,10 @@ app.factory('auth', ['$http', '$window', auth])
 
 // ·············································
 // ············ HOME CONTROLLER ················
-var HomeCtrl = function (posts) {
+var HomeCtrl = function (posts, auth) {
   var self = this
-
   self.posts = posts.posts
+  self.show = auth.isLoggedIn()
 
   self.addPost = function () {
     if (!self.title || self.title === '') return
@@ -211,14 +219,14 @@ var HomeCtrl = function (posts) {
     posts.upvote(post)
   }
 }
-app.controller('HomeCtrl', ['posts', HomeCtrl])
+app.controller('HomeCtrl', ['posts', 'auth', HomeCtrl])
 
 // ··············································
 // ············ POSTS CONTROLLER ················
-var PostsCtrl = function (posts, post) {
+var PostsCtrl = function (posts, post, auth) {
   var self = this
-  console.log(post)
   self.post = post
+  self.show = auth.isLoggedIn()
 
   self.addComment = function () {
     if (self.body === '') return
@@ -239,7 +247,7 @@ var PostsCtrl = function (posts, post) {
     posts.upvoteComment(post, comment)
   }
 }
-app.controller('PostsCtrl', ['posts', 'post', PostsCtrl])
+app.controller('PostsCtrl', ['posts', 'post', 'auth', PostsCtrl])
 
 // ··············································
 // ············· AUTH CONTROLLER ················
