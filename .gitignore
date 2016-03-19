@@ -15,7 +15,11 @@ composer.phar
 vendor/
 composer.lock
 
+# Logs
+*.log
+
 # Other
 .tmp/
 dist/
 build/
+.ENVconfig
