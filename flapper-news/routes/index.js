@@ -20,7 +20,7 @@ var register = function (req, res, next) {
   var save = function (err) {
     if (err) return next(err)
 
-    return res.json({token: user.generateJWT})
+    return res.json({token: user.generateJWT()})
   }
   user.save(save)
 }
@@ -32,7 +32,7 @@ var login = function (req, res, next) {
 
   var authenticate = function (err, user, info) {
     if (err) return next(err)
-    if (user) return res.json({token: user.generateJWT})
+    if (user) return res.json({token: user.generateJWT()})
     else return res.status(401).json(info)
   }
   passport.authenticate('local', authenticate)(req, res, next)
