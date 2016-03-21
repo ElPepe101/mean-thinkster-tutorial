@@ -148,12 +148,13 @@ router.post('/posts/:post/comments', auth, postPostComments)
 // ···································· Put Post Comment Upvote
 // curl -X PUT http://localhost:3000/posts/<POST ID>/comments/<COMMENT ID>/upvote
 var putPostCommentUpvote = function (req, res, next) {
-  var reqPostCommentUpvote = function (err, post) {
+  var reqPostCommentUpvote = function (err, comment) {
     if (err) return next(err)
 
-    res.json(post)
+    res.json(comment)
   }
-  req.post.upvote(reqPostCommentUpvote)
+  // console.log(req.comment)
+  req.comment.upvote(reqPostCommentUpvote)
 }
 router.put('/posts/:post/comments/:comment/upvote', auth, putPostCommentUpvote)
 

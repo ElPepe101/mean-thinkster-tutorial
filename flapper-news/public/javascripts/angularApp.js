@@ -149,21 +149,19 @@ var auth = function ($http, $window) {
     var token = auth.getToken()
     // If a token exists, we'll need to check the payload to see if the token has expired,
     // otherwise we can assume the user is logged out.
-    if (!!!token) {
-      // The payload is the middle part of the token between the two '.'s.
-      // It's a JSON object that has been base64'd.
-      var payload = JSON.parse($window.atob(token.split('.')[1]))
+    if (!token) return false
 
-      return payload.exp > Date.now() / 1000
-    } else {
-      return false
-    }
+    // The payload is the middle part of the token between the two '.'s.
+    // It's a JSON object that has been base64'd.
+    var payload = JSON.parse($window.atob(token.split('.')[1]))
+
+    return payload.exp > Date.now() / 1000
   }
 
   auth.currentUser = function () {
     if (auth.isLoggedIn()) {
       var token = auth.getToken()
-      var payload = JSON.parse($window.atob(token.splt('.')[1]))
+      var payload = JSON.parse($window.atob(token.split('.')[1]))
 
       return payload.username
     }
